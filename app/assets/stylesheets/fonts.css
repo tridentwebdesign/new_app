@@ -1,0 +1,5 @@
+@font-face {
+    font-family: 'MyFont';
+    src: url('/assets/fonts/genei/GenEiLateMin_v2.woff2') format('woff2'),
+        url('/assets/fonts/genei/GenEiLateMin_v2.woff') format('woff');
+}
