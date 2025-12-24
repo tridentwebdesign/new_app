@@ -149,7 +149,7 @@ git push -u origin main
 
    - **Name**: `allray`（任意）
    - **Environment**: `Ruby`
-   - **Build Command**: `bundle install; rails db:migrate`
+   - **Build Command**: `bundle install; bundle exec rails assets:precompile; bundle exec rails db:migrate`
    - **Start Command**: `bundle exec puma -C config/puma.rb`
    - **Plan**: `Free`
 
