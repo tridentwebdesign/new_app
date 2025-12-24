@@ -110,7 +110,7 @@ Render.com（ホスティング）と Neon（PostgreSQL）を組み合わせる�
 
 ```bash
 # リポジトリを作成（まだない場合）
-git remote add origin https://github.com/your-username/allray.git
+git remote add origin https://github.com/your-username/new_app.git
 git branch -M main
 git push -u origin main
 ```
@@ -126,7 +126,7 @@ git push -u origin main
 
 7. リポジトリを選択
 
-   - 自分のアプリリポジトリ（`allray`）を選択
+   - 自分のアプリリポジトリ（`new_app`）を選択
 
 8. Web Service を設定
 
@@ -136,13 +136,14 @@ git push -u origin main
    - **Start Command**: `bundle exec puma -C config/puma.rb`
    - **Plan**: `Free`
 
-9. 「Advanced」セクションを展開
+9. 「Advanced」セクションを展開して環境変数を設定
 
-   - 環境変数を設定：
-     - **DATABASE_URL**: Neon から取得した接続文字列をペースト
+   - [Environment Variables] セクションで [+ Add Environment Variable] をクリック
+   - **DATABASE_URL** という名前で、Neon から取得した接続文字列をペースト
+   - 同じ方法で以下の環境変数を追加：
      - **RAILS_ENV**: `production`
      - **RAILS_LOG_TO_STDOUT**: `true`
-     - **RAILS_MASTER_KEY**: `config/master.key` の内容
+     - **RAILS_MASTER_KEY**: ランダムな 32 文字の文字列（例：`1234567890abcdef1234567890abcdef`）※ローカルの `config/master.key` ファイルがあれば、その内容をコピー
 
 10. 「Create Web Service」をクリック
 11. デプロイが開始されます（数分かかる場合があります）
