@@ -74,93 +74,127 @@ new_app/
 
 このアプリケーションは Docker コンテナ内で実行されるため、ローカル環境に Ruby をインストールする必要はありません。すべての依存関係はコンテナ内で管理されます。
 
-## Heroku へのデプロイ
+## Render.com と Neon でのデプロイ
+
+Render.com（ホスティング）と Neon（PostgreSQL）を組み合わせることで、完全無料で Rails アプリをデプロイできます。
 
 ### 前提条件
 
-1. Heroku アカウントの作成
-   - [Heroku](https://www.heroku.com/)でアカウントを作成してください
+1. GitHub アカウント
+   - このプロジェクトを GitHub にプッシュしておいてください
 
 ### デプロイ手順
 
-#### 1. Heroku ダッシュボードでアプリケーションを作成
+#### ステップ 1: Neon で PostgreSQL データベースを作成
 
-1. [Heroku ダッシュボード](https://dashboard.heroku.com)にログイン
-2. 右上の「New」ボタンをクリック
-3. 「Create new app」を選択
-4. アプリ名を入力（例：`my-allray-app`）
-5. 地域を選択（「United States」または「Europe」）
-6. 「Create app」をクリック
+1. [Neon](https://neon.tech/)にアクセス
+2. 「Sign up」ボタンをクリック
+3. GitHub アカウントで認証（「Continue with GitHub」をクリック）
+4. プロジェクト作成ウィザードが開く
 
-#### 2. PostgreSQL アドオンを追加
+   - **Project name**: `allray-db`（任意の名前）
+   - **Database name**: デフォルトのまま（`neondb`）
+   - **Cloud service provider**: `AWS` を選択
+   - **Region**: 以下から選択：
+     - 日本にいる場合：`Asia Pacific (Singapore)` または `ap-northeast-1`（最速）
+     - それ以外の場合：最も近い地域のリージョンを選択
+   - 「Create project」をクリック
 
-1. 作成したアプリのダッシュボードを開く
-2. 「Resources」タブをクリック
-3. 「Add-ons」セクションで検索欄に「Postgres」と入力
-4. 「Heroku Postgres」を選択
-5. プランを「Hobby Dev - Free」に設定
-6. 「Submit Order Form」をクリック
+5. ダッシュボードで「Connection string」を確認
+   - 右上の「Connection string」タブを選択
+   - 「Pooled connection」を選択
+   - 全ての接続文字列をコピー（後で使用）
+   - 例：`postgresql://user:password@host/database?sslmode=require`
 
-#### 3. デプロイ用の設定
-
-アプリケーションをローカルで準備します：
+#### ステップ 2: GitHub にコードをプッシュ
 
 ```bash
-# Git リポジトリを初期化（まだの場合）
-git init
+# リポジトリを作成（まだない場合）
+git remote add origin https://github.com/your-username/allray.git
+git branch -M main
+git push -u origin main
+```
+
+#### ステップ 3: Render.com でアプリをデプロイ
+
+1. [Render.com](https://render.com/)にアクセス
+2. 「Get Started」ボタンをクリック
+3. GitHub アカウントで認証（「Continue with GitHub」をクリック）
+4. リポジトリへのアクセスを許可
+5. ダッシュボードで「New」ボタンをクリック
+6. 「Web Service」を選択
+
+7. リポジトリを選択
+
+   - 自分のアプリリポジトリ（`allray`）を選択
+
+8. Web Service を設定
+
+   - **Name**: `allray`（任意）
+   - **Environment**: `Ruby`
+   - **Build Command**: `bundle install; rails db:migrate`
+   - **Start Command**: `bundle exec puma -C config/puma.rb`
+   - **Plan**: `Free`
+
+9. 「Advanced」セクションを展開
+
+   - 環境変数を設定：
+     - **DATABASE_URL**: Neon から取得した接続文字列をペースト
+     - **RAILS_ENV**: `production`
+     - **RAILS_LOG_TO_STDOUT**: `true`
+     - **RAILS_MASTER_KEY**: `config/master.key` の内容
+
+10. 「Create Web Service」をクリック
+11. デプロイが開始されます（数分かかる場合があります）
+12. デプロイ完了後、ダッシュボードの URL（`https://allray.onrender.com` など）をクリックしてアプリを確認
+
+### 環境変数の設定詳細
+
+Render.com のダッシュボードで「Environment」を選択し、以下を設定：
+
+| キー                  | 値                  | 説明                        |
+| --------------------- | ------------------- | --------------------------- |
+| `DATABASE_URL`        | Neon の接続文字列   | PostgreSQL データベース接続 |
+| `RAILS_ENV`           | `production`        | 本番環境モード              |
+| `RAILS_LOG_TO_STDOUT` | `true`              | ログを標準出力に出す        |
+| `RAILS_MASTER_KEY`    | `config/master.key` | Rails 暗号化キー            |
+
+### デプロイ後の更新
+
+コードを更新して GitHub に push すると、自動的に Render.com がデプロイを開始します。
+
+```bash
 git add .
-git commit -m "Initial commit - Prepare for Heroku deployment"
+git commit -m "Update app"
+git push origin main
 ```
 
-#### 4. Heroku リモートを追加してデプロイ
+### トラブルシューティング
 
-ダッシュボードの「Deploy」タブで以下の情報を確認し、実行してください：
+#### デプロイに失敗した場合
 
-```bash
-# Heroku リモートを追加
-heroku git:remote -a your-app-name
+1. Render.com ダッシュボードの「Logs」タブでエラーを確認
+2. よくあるエラー：
+   - `DATABASE_URL が設定されていない` → Environment で設定を確認
+   - `RAILS_MASTER_KEY が設定されていない` → config/master.key の内容をコピー
 
-# メインブランチをデプロイ
-git push heroku main
-```
+#### アプリにアクセスできない場合
 
-※ `your-app-name` は作成したアプリ名に置き換えてください
-
-#### 5. 環境変数を設定
-
-1. ダッシュボードの「Settings」タブをクリック
-2. 「Config Vars」セクションで「Reveal Config Vars」をクリック
-3. 以下の環境変数を追加：
-   - **Key**: `RAILS_MASTER_KEY`
-   - **Value**: `config/master.key` ファイルの内容をコピー＆ペースト
-4. 「Add」ボタンをクリック
-
-#### 6. データベースのマイグレーション
-
-1. ダッシュボードの「More」ボタン（右上の …）をクリック
-2. 「Run console」を選択
-3. 以下のコマンドを実行：
-
-```bash
-rails db:migrate
-```
-
-4. コンソールが自動的に閉じれば完了
-
-#### 7. アプリケーションを確認
-
-ダッシュボードの右上にある「Open app」ボタンをクリックするか、ブラウザで以下にアクセス：
-
-```
-https://your-app-name.herokuapp.com
-```
+- デプロイ完了を待つ（数分かかる場合があります）
+- Logs タブでエラーメッセージを確認
 
 ### 重要な注意事項
 
-1. **データベース**: Heroku では本番環境で PostgreSQL を使用します（SQLite3 は使用できません）
+1. **無料プランの制限**:
 
-2. **ファイルストレージ**: Heroku のファイルシステムは一時的です。画像などのファイルアップロードには、Amazon S3 などの外部ストレージサービスを使用してください
+   - Render.com: 無料プランはメモリ 512MB、月 750 時間まで
+   - Neon: 無料プランは月 3GB の storage まで
 
-3. **環境変数**: 機密情報（API キー、パスワードなど）は必ず環境変数として設定し、コードには直接書かないでください
+2. **自動スリープ機能**:
 
-4. **本番環境設定**: `config/environments/production.rb` の設定が適切か確認してください
+   - Render.com の無料プランはアイドル 15 分後にスリープ状態になります
+   - 次のリクエストで自動的に起動します
+
+3. **ファイルストレージ**: Render.com のファイルシステムは一時的です。画像などのファイルアップロードには、AWS S3 などの外部ストレージを使用してください
+
+4. **機密情報**: API キーやパスワードはコードに直接書かず、Environment の環境変数に設定してください
