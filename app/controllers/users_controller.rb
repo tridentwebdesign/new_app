@@ -6,9 +6,10 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params)
     if @user.save
-      redirect_to root_path, notice: "登録完了しました"
+      session[:user_id] = @user.id
+      redirect_to root_path, notice: "登録完了しました。ログインしています。"
     else
-      render :new
+      render :new, status: :unprocessable_entity
     end
   end
 

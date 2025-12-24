@@ -8,3 +8,8 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+
+@import url('fonts.css');
+@import url('home.css');
+@import url('posts.css');
+@import url('layout.css');

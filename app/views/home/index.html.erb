@@ -8,20 +8,38 @@
 </header>
 <html>
     <body>
-    <div class="inner">
-        <h1>はじめまして!!Allrayへようこそ!!</h1>
-        <p>Allrayは、様々な趣味・ジャンルを問わず交流できるSNSサイトです。</p>
-        <p>サイトのアカウント登録はお済みですか？</p>
-    </div>
-
-<p>すでにアカウントをお持ちの方は下のリンクからログインしてください。</p>
-
-    <div class="btn-block">
-        <%= link_to "サインアップ", new_user_path %><br>
-        もしくは、
-        <br>
-        <%= link_to "サインイン", new_session_path %>
-    </div>
+<div class="inner">
+    <h1>はじめまして!!Allrayへようこそ!!</h1>
+    <p>Allrayは、様々な趣味・ジャンルを問わず交流できるSNSサイトです。</p>
+    
+    <% if logged_in? %>
+      <h2>何をしますか？</h2>
+      <div class="btn-block">
+        <%= link_to "投稿一覧を見る", posts_path, class: "action-link" %>
+        <%= link_to "新しい投稿を作成", new_post_path, class: "action-link secondary" %>
+      </div>
+      
+      <div class="action-section">
+        <h3>Allrayでできること：</h3>
+        <ul class="feature-list">
+          <li>自分の趣味や興味について投稿する</li>
+          <li>他のユーザーの投稿を閲覧する</li>
+          <li>投稿を編集・削除する</li>
+          <li>様々なジャンルの情報を共有する</li>
+        </ul>
+      </div>
+    <% else %>
+      <p>サイトのアカウント登録はお済みですか？</p>
+      <p>すでにアカウントをお持ちの方は下のリンクからログインしてください。</p>
+      
+      <div class="btn-block">
+          <%= link_to "サインアップ", new_user_path %><br>
+          もしくは、
+          <br>
+          <%= link_to "サインイン", new_session_path %>
+      </div>
+    <% end %>
+</div>
 
     </body>
 </html>

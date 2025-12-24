@@ -1,21 +1,33 @@
 <h1>サインアップ</h1>
-<p>Find me in app/views/users/new.html.erb</p>
 
-<%= form_with model: @user do |f| %>
+<% if @user.errors.any? %>
+  <div class="form-errors">
+    <h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
+    <ul>
+      <% @user.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with model: @user, url: users_path do |f| %>
   <div>
-    <%= f.label :email %><br>
-    <%= f.email_field :email %>
+    <%= f.label :email, "メールアドレス" %><br>
+    <%= f.email_field :email, required: true %>
   </div>
 
   <div>
-    <%= f.label :password %><br>
-    <%= f.password_field :password %>
+    <%= f.label :password, "パスワード" %><br>
+    <%= f.password_field :password, required: true %>
   </div>
 
   <div>
-    <%= f.label :password_confirmation %><br>
-    <%= f.password_field :password_confirmation %>
+    <%= f.label :password_confirmation, "パスワード確認" %><br>
+    <%= f.password_field :password_confirmation, required: true %>
   </div>
 
   <%= f.submit "登録" %>
 <% end %>
+
+<p><%= link_to "ログインはこちら", new_session_path %></p>

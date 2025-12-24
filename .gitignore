@@ -7,6 +7,9 @@
 # Ignore bundler config.
 /.bundle
 
+# Ignore vendor bundle (Docker用の依存関係キャッシュ)
+/vendor/bundle
+
 # Ignore all environment files.
 /.env*
 

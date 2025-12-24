@@ -1,0 +1,73 @@
+/* ナビゲーション */
+.main-nav {
+  padding: 10px;
+  background: #004f4f;
+  color: white;
+  margin-bottom: 20px;
+}
+
+.nav-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-link {
+    color: white;
+    text-decoration: none;
+    margin-right: 20px;
+}
+
+.nav-link.bold {
+    font-weight: bold;
+}
+
+/* フラッシュメッセージ */
+.notice {
+    padding: 10px;
+    background: #d4edda;
+    color: #155724;
+    margin-bottom: 20px;
+}
+
+.alert {
+    padding: 10px;
+    background: #f8d7da;
+    color: #721c24;
+    margin-bottom: 20px;
+}
+
+/* フォーム */
+.form-errors {
+    color: red;
+}
+
+.form-label {
+    display: block;
+}
+
+/* ホームページ */
+.action-section {
+    margin-top: 30px;
+}
+
+.feature-list {
+    text-align: left;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.action-link {
+    display: block;
+    margin: 10px 0;
+    padding: 15px;
+    background: #004f4f;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.action-link.secondary {
+    background: #006f6f;
