@@ -51,7 +51,7 @@ docker compose exec web bin/rails test
 
 - Ruby 3.4.2
 - Rails 8.0.4
-- SQLite3
+- PostgreSQL 16（開発・本番共通）
 - Puma (アプリケーションサーバー)
 - Docker & Docker Compose
 
@@ -72,7 +72,40 @@ new_app/
 
 ## 開発について
 
-このアプリケーションは Docker コンテナ内で実行されるため、ローカル環境に Ruby をインストールする必要はありません。すべての依存関係はコンテナ内で管理されます。
+このアプリケーションは Docker コンテナ内で実行されるため、ローカル環境に Ruby や PostgreSQL をインストールする必要はありません。すべての依存関係はコンテナ内で管理されます。
+
+### データベース構成
+
+- **開発環境**: Docker コンテナ内の PostgreSQL 16
+- **本番環境**: Neon（PostgreSQL）
+- 開発環境と本番環境で同じデータベースエンジンを使用することで、環境差異によるバグを防ぎます
+
+### Docker Compose 構成
+
+- `web`: Rails アプリケーションサーバー（Ruby 3.4.2）
+- `db`: PostgreSQL 16 データベースサーバー
+- データベースデータは Docker ボリューム `postgres_data` に永続化されます
+
+### 初回起動時の動作
+
+`docker compose up -d` を実行すると、以下が自動的に実行されます：
+
+1. 依存関係のインストール（`bundle install`）
+2. データベースの作成（`db:create`）
+3. マイグレーションの実行（`db:migrate`）
+4. Rails サーバーの起動
+
+### データベースのリセット
+
+データベースを完全にリセットしたい場合：
+
+```bash
+# コンテナとボリュームを削除
+docker compose down -v
+
+# 再起動（データベースが再作成されます）
+docker compose up -d
+```
 
 ## Render.com と Neon でのデプロイ
 
